@@ -40,6 +40,7 @@ calibrate = False
 forward_speed = 80
 backward_speed = 70
 turning_angle = 40
+current_angle = 0
 
 max_off_track_count = 40
 
@@ -58,10 +59,21 @@ def straight_run():
 		bw.speed = 70
 		bw.forward()
 		fw.turn_straight()
+		current_angle = 90
 
 def setup():
 	if calibrate:
 		cali()
+
+def smooth_turn(final_angle, step=1, time_interval=0.05):
+	sign = 1 * step
+	if (final_angle < current_angle)
+	sign = -1 * step
+
+	while (final_angle != current_angle):
+		fw.wheel.write(current_angle + sign)
+		current_angle = current_angle + sign
+		sleep(time_interval)
 
 def main():
 	global turning_angle
@@ -73,6 +85,8 @@ def main():
 	c_step = 30
 	d_step = 45
 	bw.forward()
+
+	start_time_ms = time.time() * 1000
 	while True:
 		#lt_status_now = lf.read_digital()
                 ### clib call
@@ -81,23 +95,32 @@ def main():
 		ptr = ctypes.cast(dt_list,ctypes.POINTER(ctypes.c_int))
 		for i in range(0,5):
 			lt_status_now.append(ptr[i])
-		print(lt_status_now)
+
+		diff_ms = (time.time() * 1000) - start_time_ms
+		print(str(lt_status_now)[1:-1] + ", " + str(diff_ms))
+
 		# Angle calculate
 		if	lt_status_now == [0,0,1,0,0]:
 			step = 0	
 		elif lt_status_now == [0,1,1,0,0] or lt_status_now == [0,0,1,1,0]:
 			step = a_step
+			bw.speed = forward_speed - 5
 		elif lt_status_now == [0,1,0,0,0] or lt_status_now == [0,0,0,1,0]:
 			step = b_step
+			bw.speed = forward_speed - 10
 		elif lt_status_now == [1,1,0,0,0] or lt_status_now == [0,0,0,1,1]:
 			step = c_step
+			bw.speed = forward_speed - 15
 		elif lt_status_now == [1,0,0,0,0] or lt_status_now == [0,0,0,0,1]:
 			step = d_step
+			bw.speed = forward_speed - 20
 
 		# Direction calculate
 		if	lt_status_now == [0,0,1,0,0]:
 			off_track_count = 0
-			fw.turn(90)
+			smooth_turn(90)
+			#fw.wheel.write(90)
+			#current_angle = 90
 		# turn right
 		elif lt_status_now in ([0,1,1,0,0],[0,1,0,0,0],[1,1,0,0,0],[1,0,0,0,0]):
 			off_track_count = 0
@@ -106,6 +129,7 @@ def main():
 		elif lt_status_now in ([0,0,1,1,0],[0,0,0,1,0],[0,0,0,1,1],[0,0,0,0,1]):
 			off_track_count = 0
 			turning_angle = int(90 + step)
+
 		elif lt_status_now == [0,0,0,0,0]:
 			off_track_count += 1
 			if off_track_count > max_off_track_count:
@@ -114,14 +138,16 @@ def main():
 				tmp_angle *= fw.turning_max
 				bw.speed = backward_speed
 				bw.backward()
-				fw.turn(tmp_angle)
+				fw.wheel.write(tmp_angle)
+				current_angle = tmp_angle
 				
 				### clib call
 				c_lib.wait_tile_center()
 				#lf.wait_tile_center()
 				bw.stop()
 
-				fw.turn(turning_angle)
+				fw.wheel.write(turning_angle)
+				current_angle = turning_angle
 				time.sleep(0.2)
 				bw.speed = forward_speed
 				bw.forward()
@@ -132,7 +158,9 @@ def main():
 		else:
 			off_track_count = 0
 	
-		fw.turn(turning_angle)
+		smooth_turn(turning_angle)
+		#fw.wheel.write(turning_angle)
+		#current_angle = turning_angle
 		time.sleep(delay)
 
 def cali():
@@ -161,6 +189,7 @@ def cali():
 	fw.turn(85)
 	time.sleep(0.5)
 	fw.turn(90)
+	current_angle = 90
 	time.sleep(1)
 
 	for i in range(0, 5):
@@ -184,4 +213,3 @@ if __name__ == '__main__':
 			#straight_run()
 	except KeyboardInterrupt:
 		destroy()
-

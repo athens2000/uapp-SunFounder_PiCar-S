@@ -80,10 +80,10 @@ def main():
 
 	off_track_count = 0
 	bw.speed = forward_speed
-	a_step = 3
-	b_step = 10
-	c_step = 30
-	d_step = 45
+	a_step = 2
+	b_step = 8 
+	c_step = 24 
+	d_step = 40 
 	bw.forward()
 
 	start_time_ms = time.time() * 1000

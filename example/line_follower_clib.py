@@ -65,6 +65,7 @@ def setup():
 	if calibrate:
 		cali()
 
+'''
 def smooth_turn(final_angle, step=10, time_interval=0.001):
 	global current_angle
 	sign = 1 * step
@@ -79,6 +80,24 @@ def smooth_turn(final_angle, step=10, time_interval=0.001):
 			fw.wheel.write(current_angle)
 			current_angle = current_angle + sign
 			time.sleep(time_interval)
+'''
+# Atharv's version
+def smooth_turn(final_angle, step=10, time_interval=0.001):
+	global current_angle
+	sign = 1 * step
+	if (final_angle < current_angle):
+		sign = -1 * step
+	while (final_angle != current_angle):
+		if (sign > 0 and current_angle + sign > final_angle):
+			current_angle = final_angle
+			fw.wheel.write(current_angle)
+		elif (sign < 0 and current_angle + sign < final_angle):
+			current_angle = final_angle
+			fw.wheel.write(current_angle)
+		else:
+			current_angle = current_angle + sign
+			fw.wheel.write(current_angle)
+		time.sleep(time_interval)
 
 def main():
 	global turning_angle

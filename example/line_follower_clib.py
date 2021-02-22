@@ -65,15 +65,15 @@ def setup():
 	if calibrate:
 		cali()
 
-def smooth_turn(final_angle, step=1, time_interval=0.05):
+def smooth_turn(final_angle, step=10, time_interval=0.001):
+	global current_angle
 	sign = 1 * step
-	if (final_angle < current_angle)
-	sign = -1 * step
-
+	if (final_angle < current_angle):
+		sign = -1 * step
 	while (final_angle != current_angle):
-		fw.wheel.write(current_angle + sign)
+		fw.wheel.write(current_angle)
 		current_angle = current_angle + sign
-		sleep(time_interval)
+		time.sleep(time_interval)
 
 def main():
 	global turning_angle
@@ -118,7 +118,7 @@ def main():
 		# Direction calculate
 		if	lt_status_now == [0,0,1,0,0]:
 			off_track_count = 0
-			smooth_turn(90)
+			smooth_turn(90,1,0.00001)
 			#fw.wheel.write(90)
 			#current_angle = 90
 		# turn right
@@ -158,7 +158,7 @@ def main():
 		else:
 			off_track_count = 0
 	
-		smooth_turn(turning_angle)
+		smooth_turn(turning_angle,1,0.00001)
 		#fw.wheel.write(turning_angle)
 		#current_angle = turning_angle
 		time.sleep(delay)

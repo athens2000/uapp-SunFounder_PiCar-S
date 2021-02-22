@@ -37,7 +37,7 @@ if rslt == -1:
 REFERENCES = [200, 200, 200, 200, 200]
 #calibrate = True
 calibrate = False
-forward_speed = 80
+forward_speed = 90
 backward_speed = 70
 turning_angle = 40
 current_angle = 0
@@ -104,16 +104,16 @@ def main():
 			step = 0	
 		elif lt_status_now == [0,1,1,0,0] or lt_status_now == [0,0,1,1,0]:
 			step = a_step
-			bw.speed = forward_speed - 5
+			bw.speed = forward_speed - 10 
 		elif lt_status_now == [0,1,0,0,0] or lt_status_now == [0,0,0,1,0]:
 			step = b_step
-			bw.speed = forward_speed - 10
+			bw.speed = forward_speed - 20
 		elif lt_status_now == [1,1,0,0,0] or lt_status_now == [0,0,0,1,1]:
 			step = c_step
-			bw.speed = forward_speed - 15
+			bw.speed = forward_speed - 30 
 		elif lt_status_now == [1,0,0,0,0] or lt_status_now == [0,0,0,0,1]:
 			step = d_step
-			bw.speed = forward_speed - 20
+			bw.speed = forward_speed - 40
 
 		# Direction calculate
 		if	lt_status_now == [0,0,1,0,0]:

@@ -70,10 +70,15 @@ def smooth_turn(final_angle, step=10, time_interval=0.001):
 	sign = 1 * step
 	if (final_angle < current_angle):
 		sign = -1 * step
-	while (final_angle != current_angle):
-		fw.wheel.write(current_angle)
-		current_angle = current_angle + sign
-		time.sleep(time_interval)
+		while (final_angle <= current_angle):
+			fw.wheel.write(current_angle)
+			current_angle = current_angle + sign
+			time.sleep(time_interval)
+	else:
+		while (final_angle >= current_angle):
+			fw.wheel.write(current_angle)
+			current_angle = current_angle + sign
+			time.sleep(time_interval)
 
 def main():
 	global turning_angle
@@ -107,18 +112,21 @@ def main():
 			bw.speed = forward_speed - 10 
 		elif lt_status_now == [0,1,0,0,0] or lt_status_now == [0,0,0,1,0]:
 			step = b_step
-			bw.speed = forward_speed - 20
+			bw.speed = forward_speed - 15 
 		elif lt_status_now == [1,1,0,0,0] or lt_status_now == [0,0,0,1,1]:
 			step = c_step
-			bw.speed = forward_speed - 30 
+			bw.speed = forward_speed - 25 
 		elif lt_status_now == [1,0,0,0,0] or lt_status_now == [0,0,0,0,1]:
+			step = d_step
+			bw.speed = forward_speed - 35 
+		else:   # Handle the case when we read all 0s - when we are completely out
 			step = d_step
 			bw.speed = forward_speed - 40
 
 		# Direction calculate
 		if	lt_status_now == [0,0,1,0,0]:
 			off_track_count = 0
-			smooth_turn(90,1,0.00001)
+			smooth_turn(90,5,0.00001)
 			#fw.wheel.write(90)
 			#current_angle = 90
 		# turn right
@@ -158,7 +166,7 @@ def main():
 		else:
 			off_track_count = 0
 	
-		smooth_turn(turning_angle,1,0.00001)
+		smooth_turn(turning_angle,5,0.00001)
 		#fw.wheel.write(turning_angle)
 		#current_angle = turning_angle
 		time.sleep(delay)
